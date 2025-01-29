@@ -1,2 +1,7 @@
 sudo curl -L "https://github.com/docker/compose/releases/download/版本号/docker-compose- $ (uname -s)- $ (uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
+
+
+
+eyJ2ZXIiOiI4LjE0LjAiLCJhZHIiOlsiMTcyLjE4LjAuMjo5MjAwIl0sImZnciI6IjVhYjk0ZWJmMTlhNTdhMDA0NmUzYjZlMGM5OTYxNmJmZWM1N2NjMDI2N2Y3ZjdlMjQ2ZTMwYzIzZWM4YmVlNjkiLCJrZXkiOiI4SFRNc1pRQmMtU2N1SUNtQUd1Zzo3WjlXYV9FMFFIT2toUzFGTUt2Z2pRIn0=
+elasticsearch@a6272f4b48b7:~/bin$ 

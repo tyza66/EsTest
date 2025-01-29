@@ -1,0 +1,51 @@
+# Welcome to the Dev Tools Console!
+#
+# You can use Console to explore the Elasticsearch API. See the Elasticsearch API reference to learn more:
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html
+#
+# Here are a few examples to get you started.
+
+
+# Create an index
+PUT /my-index
+
+
+# Add a document to my-index
+POST /my-index/_doc
+{
+    "id": "park_rocky-mountain",
+    "title": "Rocky Mountain",
+    "description": "Bisected north to south by the Continental Divide, this portion of the Rockies has ecosystems varying from over 150 riparian lakes to montane and subalpine forests to treeless alpine tundra."
+}
+
+
+# Perform a search in my-index
+GET /my-index/_search?q="rocky mountain"
+
+# 使用ico分词器
+POST /_analyze
+{
+  "analyzer":"icu_analyzer",
+  "text":"中华人民共和国"
+}
+
+# 使用es默认的分词器
+POST /_analyze
+{
+  "analyzer":"standard",
+  "text":"中华人民共和国"
+}
+
+# 使用ik_smart分词器 最粗粒度的分词
+POST /_analyze
+{
+  "analyzer":"ik_smart",
+  "text":"中华人民共和国万岁"
+}
+
+# 使用ik_max_word分词器 最细粒度的分词
+POST /_analyze
+{
+  "analyzer":"ik_max_word",
+  "text":"中华人民共和国万岁"
+}
