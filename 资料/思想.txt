@@ -18,3 +18,5 @@ match多条件查询的时候中间是空格分隔 之后指定operatpr
 multi_match是对多个条件进行检索,可以通过一个条件在多种field中查询
 
 fuzzy还能模糊查询 进行大概匹配 但是不太文稳定
+
+wildcard是通配查询 和MySQL中的like是一个套路 *是任意数量 ?是占位一个字符
