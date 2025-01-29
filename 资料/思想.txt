@@ -20,3 +20,9 @@ multi_match是对多个条件进行检索,可以通过一个条件在多种field
 fuzzy还能模糊查询 进行大概匹配 但是不太文稳定
 
 wildcard是通配查询 和MySQL中的like是一个套路 *是任意数量 ?是占位一个字符
+
+range范围查询 带e就是带等于号
+
+regexp是正则查询 按照自己的正则表达式 列斯 180[0-9]{8}
+
+其中fuzzy prefix wildcard regexp查询效率相对较低 要求效率的时候尽量不要用
