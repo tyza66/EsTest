@@ -1,0 +1,25 @@
+在CentOS 7上安装Docker的步骤如下：
+
+检查内核版本
+确保你的CentOS 7内核版本在3.10以上，可以使用命令uname -r检查。
+更新系统包
+使用命令yum update更新系统包到最新。
+卸载旧版本（如果安装过）
+使用命令yum remove docker docker-common docker-selinux docker-engine卸载旧版本。
+安装必要的软件包
+使用命令yum install -y yum-utils device-mapper-persistent-data lvm2安装必要的软件包。
+设置Docker的yum源
+使用命令yum-config-manager --add-repo http://download.docker.com/linux/centos/docker-ce.repo添加Docker的官方yum源，或者使用阿里云镜像源yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo以获得更快的下载速度。
+安装Docker
+使用命令yum list docker-ce --showduplicates | sort -r查看可用的Docker版本。
+选择一个版本安装，例如yum install docker-ce-18.03.1.ce-1.el7.centos。
+如果不指定版本，直接使用yum install docker-ce安装最新版本。
+启动Docker并设置开机自启
+使用命令systemctl start docker启动Docker。
+使用命令systemctl enable docker设置Docker开机自启。
+验证安装
+使用命令docker version验证Docker是否安装成功。
+配置Docker镜像加速器
+创建或编辑/etc/docker/daemon.json文件，添加加速器配置，例如使用阿里云镜像加速器。
+重启Docker服务使配置生效：systemctl restart docker。12345
+通过以上步骤，你可以成功在CentOS 7上安装并配置Docker。如果在安装过程中遇到任何问题，可以查阅Docker的官方文档获取更多帮助。
