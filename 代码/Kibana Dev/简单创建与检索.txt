@@ -1,0 +1,56 @@
+# 这里创建一个自己的百度搜索服务
+# ES7以后版本索引相当于是数据库中的表
+# mappings相当于表的字段
+
+# 创建索引
+PUT /index
+
+# 创建映射
+POST /index/_mapping
+{
+  "properties":{
+    "content":{
+      "type":"text",
+      "analyzer":"ik_max_word",    #为记录生成倒排索引用的分词器
+      "search_analyzer":"ik_smart" #搜索的时候用的分词器
+    }
+  }
+}
+
+# 插入文档
+POST /index/_create/1
+{
+  "content":"今天是大年初二"
+}
+
+POST /index/_create/2
+{
+  "content":"最近是过年期间"
+}
+
+POST /index/_create/3
+{
+  "content":"明天就是初三了"
+}
+
+POST /index/_create/4
+{
+  "content":"过几天去吃烤肉"
+}
+
+# 高亮搜索
+POST /index/_search
+{
+  "query":{
+    "match": {
+      "content": "过年期间"
+    }
+  },
+  "highlight": {
+    "pre_tags": ["<tag1>","<tag2>"],
+    "post_tags": ["</tag1>","</tag2>"],
+    "fields": {
+      "content": {}
+    }
+  }
+}
