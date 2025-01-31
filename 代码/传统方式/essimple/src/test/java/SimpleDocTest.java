@@ -1,14 +1,12 @@
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.core.IndexRequest;
-import co.elastic.clients.elasticsearch.core.IndexResponse;
-import co.elastic.clients.elasticsearch.core.InfoResponse;
+import co.elastic.clients.elasticsearch.core.*;
 import org.junit.jupiter.api.Test;
 
-import static co.elastic.clients.elasticsearch.watcher.HttpInputMethod.Post;
 import static com.tyza66.essimple.dao.EsClientIniter.getClient;
 
 
 import com.tyza66.essimple.entity.Post;
+
 public class SimpleDocTest {
 
     @Test
@@ -36,4 +34,23 @@ public class SimpleDocTest {
         System.out.println("Indexed with version: " + response.version());
     }
 
+    @Test
+    public void getSimpleDoc() throws Exception {
+        ElasticsearchClient client = getClient();
+        // 获取文档示例
+        GetRequest getRequest = GetRequest.of(g -> g
+                .index("posts")
+                .id("1")
+        );
+
+        GetResponse<Post> getResponse = client.get(getRequest, Post.class);
+        if (getResponse.found()) {
+            Post post = getResponse.source();
+            System.out.println("Document retrieved: " + post);
+        } else {
+            System.out.println("Document not found.");
+
+        }
+
+    }
 }
