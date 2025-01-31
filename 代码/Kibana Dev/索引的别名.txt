@@ -1,0 +1,77 @@
+# 创建索引的时候指定别名
+PUT myindex
+{
+  "aliases": {
+    "myindex_alias": {}
+  },
+  "settings": {
+    "refresh_interval": "30s",
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}
+
+# 使用索引原名访问索引
+GET myindex
+
+# 使用索引别名访问索引
+GET myindex_alias
+
+# 创建测试索引
+PUT /test1
+
+# 为已存在索引创建别名
+POST /_aliases
+{
+  "actions": [
+    {
+      "add": {
+        "index": "test1",
+        "alias": "alias1"
+      }
+    }
+  ]
+}
+
+# 别名查看一些
+GET alias1
+
+# 常规的多索引查询
+POST t1_index,t2_index,t3_index/_search
+POST *_index/_search
+
+#  使用别名的方案进行多索引查询
+
+PUT t1_index
+PUT t2_index
+PUT t3_index
+
+# 将索引都指向同一个别名
+POST _aliases
+{
+  "actions": [
+    {
+      "add": {
+        "index": "test1",
+        "alias": "test_alias"
+      }
+    },
+    {
+      "add": {
+        "index": "test1",
+        "alias": "test_alias"
+      }
+    },
+    {
+      "add": {
+        "index": "test1",
+        "alias": "test_alias"
+      }
+    }
+  ]
+}
+
+# 直接这样使用别名获取数据即可
+GET test_alias/_search
+
+# 索引检索效率和物理索引一致

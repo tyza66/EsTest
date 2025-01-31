@@ -1,0 +1,53 @@
+# 索引操作
+
+# 创建索引
+PUT /user
+
+# 查看索引
+GET /user
+
+# 创建索引并指定配置
+PUT /student_index
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1
+  },
+  "mappings": {
+    "properties": {
+      "name":{
+        "type":"text"
+      },
+      "age":{
+        "type":"integer"
+      },
+      "enrolled_date":{
+        "type": "date"
+      }
+    }
+  }
+}
+
+# 查看一下刚才创建的
+GET /student_index
+
+# 删除刚才创建的索引
+DELETE /student_index
+
+# 修改索引设置
+PUT /student_index/_settings
+{
+  "index":{
+    "number_of_replicas":2
+  }
+}
+
+# 新增修改字段
+PUT /student_index/_mapping
+{
+  "properties":{
+    "grade":{
+      "type":"integer"
+    }
+  }
+}
