@@ -1,0 +1,179 @@
+# 文档的基本操作
+
+PUT employee
+{
+  "settings": {
+     "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "properties": {
+      "name":{
+        "type": "text"
+      },
+      "age":{
+        "type":"integer"
+      }
+    }
+  }
+}
+
+# 指定id新增文档  更新的时候会替换整个文档 会删除旧的增加新的到原来位置
+# 添加文档的时候,如果指定索引不存在会自动创建
+PUT /employee/_doc/1
+{
+  "name":"小明888"
+
+}
+
+# 不指定id的插入
+POST /employee/_doc
+{
+  "name":"老明",
+  "age":1000
+}
+
+POST /employee/_doc
+{
+  "name":"?明"
+}
+
+GET /employee/_search
+
+# 只创建
+POST _bulk
+{ "create" : { "_index" : "employee", "_id" : "3" } }
+{ "name" : "中明", "age" : 10 }
+{ "create" : { "_index" : "employee", "_id" : "4" } }
+{ "name" : "变异明", "age" : 1 }
+
+# 已存在的话会替换成新的文档
+POST _bulk
+{ "index" : { "_index" : "employee", "_id" : "3" } }
+{ "name" : "中明", "age" : 10 }
+{ "index" : { "_index" : "employee", "_id" : "4" } }
+{ "name" : "变明"}
+
+# 按id查询
+GET /employee/_doc/1
+
+# 一次查询多个id
+GET /employee/_mget
+{
+  "ids":["1","2","3"]
+}
+
+# 精确查询
+GET /employee/_search
+{
+  "query":{
+    "term":{
+      "name":"明"
+    }
+  }
+}
+
+# 全文检索 会对搜索词也进行分词
+GET /employee/_search
+{
+  "query":{
+    "match":{
+      "name":"小明"
+    }
+  }
+}
+
+# 范围查询,查询age在1-100岁的
+GET /employee/_search
+{
+  "query":{
+    "range": {
+      "age": {
+        "gte": 1,
+        "lte": 100
+      }
+    }
+  }
+}
+
+# 删除id为1的文档
+DELETE /employee/_doc/1
+
+# 批量删除
+POST employee/_bulk
+{"delete":{"_id":3}}
+{"delete":{"_id":4}}
+
+POST employee/_delete_by_query
+{
+  "query":{
+    "match": {
+      "name": "小明"
+    }
+  }
+}
+
+# 修改员工id为1的文档
+# 它是局部更新 不会清空文档
+POST /employee/_update/1
+{
+  "doc":{
+    "age":28
+  }
+}
+
+# 批量修改
+POST _bulk
+{ "update" : { "_index" : "employee", "_id" : "1" } }
+{ "doc" : {"name":"改动"} }
+{ "update" : { "_index" : "employee", "_id" : "2" } }
+{ "doc" : {"name":"改动"} }
+
+# 通过搜索条件更新
+POST /employee/_update_by_query
+{
+  "query":{
+    "term": {
+      "name": "改"
+    }
+  },
+  "script": {
+    "source": "ctx._source.age = 30"
+  }
+}
+
+GET /employee/_search
+
+GET /employee/_doc/1
+
+# 如果先保证同步(乐观锁)
+POST /employee/_doc/1?if_seq_no=24&if_primary_term=1
+{
+  "name":"ssss",
+  "age":99
+}
+
+POST /employee/_doc/1?if_seq_no=24&if_primary_term=1
+{
+  "name":"sssSs",
+  "age":100
+}
+
+GET employee/_search
+{
+  "query": {
+    "bool":{
+      "must":[
+        {
+          "match": {
+            "name": "ssss"
+          }
+        },{
+          "match":{
+            "age":99
+          }
+        }
+      ]
+    }
+  }
+}

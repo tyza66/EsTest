@@ -1,3 +1,5 @@
 elasticsearch-plugin install analysis-icu
 
 release.infinilabs.com/analysis-ik/stable/
+
+unzip xxx.zip -d xxx
