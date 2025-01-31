@@ -1,50 +1,39 @@
-import com.tyza66.essimple.dao.EsClientIniter;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.xcontent.XContentType;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.IndexRequest;
+import co.elastic.clients.elasticsearch.core.IndexResponse;
+import co.elastic.clients.elasticsearch.core.InfoResponse;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
+import static co.elastic.clients.elasticsearch.watcher.HttpInputMethod.Post;
 import static com.tyza66.essimple.dao.EsClientIniter.getClient;
 
+
+import com.tyza66.essimple.entity.Post;
 public class SimpleDocTest {
 
     @Test
     public void ping() throws Exception {
-        RestHighLevelClient client = getClient();
-        try {
-            boolean response = client.ping(RequestOptions.DEFAULT);
-            System.out.println("Ping response: " + response);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                client.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        ElasticsearchClient client = getClient();
+        // 进行 ping 测试
+        InfoResponse infoResponse = client.info();
+        System.out.println("Cluster name: " + infoResponse.clusterName());
+
     }
 
+    // 插入文档示例
+    // 日期格式为 yyyy-MM-dd会自动存为Date类型
     @Test
     public void AddSimpleDoc() throws Exception {
-        RestHighLevelClient client = getClient();
-        String jsonString = "{" +
-                "\"user\":\"kimchy\"," +
-                "\"postDate\":\"2023-01-31\"," +
-                "\"message\":\"trying out Elasticsearch\"" +
-                "}";
-
-        IndexRequest request = new IndexRequest("posts")
+        ElasticsearchClient client = getClient();
+        // 插入文档示例
+        IndexRequest<Object> request = IndexRequest.of(i -> i
+                .index("posts")
                 .id("1")
-                .source(jsonString, XContentType.JSON);
+                .document(new Post("kimchy", "2023-01-31", "trying out Elasticsearch"))
+        );
 
-        IndexResponse indexResponse = client.index(request, RequestOptions.DEFAULT);
-        System.out.println(indexResponse);
-        client.close();
-
+        IndexResponse response = client.index(request);
+        System.out.println("Indexed with version: " + response.version());
     }
+
 }
