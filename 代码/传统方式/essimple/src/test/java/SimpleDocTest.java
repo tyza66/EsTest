@@ -7,6 +7,9 @@ import static com.tyza66.essimple.dao.EsClientIniter.getClient;
 
 import com.tyza66.essimple.entity.Post;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SimpleDocTest {
 
     @Test
@@ -34,6 +37,38 @@ public class SimpleDocTest {
         System.out.println("Indexed with version: " + response.version());
     }
 
+    // 删除文档示例
+    @Test
+    public void deleteSimpleDoc() throws Exception {
+        ElasticsearchClient client = getClient();
+        // 删除文档示例
+        DeleteRequest deleteRequest = DeleteRequest.of(d -> d
+                .index("posts")
+                .id("1")
+        );
+
+        DeleteResponse deleteResponse = client.delete(deleteRequest);
+        System.out.println("Document deleted: " + deleteResponse.result());
+    }
+
+    // 更新文档示例
+    @Test
+    public void updateSimpleDoc() throws Exception {
+        ElasticsearchClient client = getClient();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("message", "update message");
+        // 更新文档示例 - 局部更新
+        UpdateRequest<Map<String, Object>, Map<String, Object>> updateRequest = UpdateRequest.of(u -> u
+                .index("posts")
+                .id("1")
+                .doc(map)
+        );
+
+        UpdateResponse<Map<String, Object>> updateResponse = client.update(updateRequest, Map.class);
+        System.out.println("Updated version: " + updateResponse.version());
+    }
+
+    // 获取指定id的文档示例
     @Test
     public void getSimpleDoc() throws Exception {
         ElasticsearchClient client = getClient();
