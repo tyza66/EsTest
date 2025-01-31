@@ -1,5 +1,9 @@
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.*;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.json.JsonData;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
+import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.Test;
 
 import static com.tyza66.essimple.dao.EsClientIniter.getClient;
@@ -7,7 +11,9 @@ import static com.tyza66.essimple.dao.EsClientIniter.getClient;
 
 import com.tyza66.essimple.entity.Post;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SimpleDocTest {
@@ -87,5 +93,91 @@ public class SimpleDocTest {
 
         }
 
+    }
+
+    // match搜索文档示例
+    @Test
+    public void matchSearch() {
+        ElasticsearchClient client = null;
+        RestClient restClient = null;
+        try {
+            client = getClient();
+            restClient = ((RestClientTransport) client._transport()).restClient();
+
+            // 搜索文档示例 - match 查询
+            SearchRequest searchRequest = SearchRequest.of(s -> s
+                    .index("posts")
+                    .query(q -> q
+                            .match(m -> m
+                                    .field("message")
+                                    .query("Elasticsearch")
+                            )
+                    )
+            );
+
+            SearchResponse<Map> searchResponse = client.search(searchRequest, Map.class);
+            List<Hit<Map>> hits = searchResponse.hits().hits();
+            for (Hit<Map> hit : hits) {
+                Map<String, Object> source = hit.source();
+                System.out.println("Document found: " + source);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (restClient != null) {
+                try {
+                    restClient.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    // 带bool的搜索
+    @Test
+    public void boolSearch() {
+        ElasticsearchClient client = null;
+        RestClient restClient = null;
+        try {
+            client = getClient();
+            restClient = ((RestClientTransport) client._transport()).restClient();
+
+            // 搜索文档示例 - bool 查询
+            SearchRequest searchRequest = SearchRequest.of(s -> s
+                    .index("posts")
+                    .query(q -> q
+                            .bool(b -> b
+                                    .must(m -> m
+                                            .match(m1 -> m1
+                                                    .field("message")
+                                                    .query("Elasticsearch")
+                                            )
+                                    ).must(m -> m
+                                            .range(r -> r
+                                                    .field("postDate")
+                                                    .gte(JsonData.fromJson("2023-01-01"))
+                                            )
+                                    ).mustNot(m -> m
+                                            .match(m1 -> m1
+                                                    .field("user")
+                                                    .query("kimchy")
+                                            )
+                                    )
+                            )
+                    )
+            );
+
+            SearchResponse<Map> searchResponse = client.search(searchRequest, Map.class);
+            List<Hit<Map>> hits = searchResponse.hits().hits();
+            for (Hit<Map> hit : hits) {
+                Map<String, Object> source = hit.source();
+                System.out.println("Document found: " + source);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
